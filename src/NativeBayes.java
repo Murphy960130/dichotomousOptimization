@@ -1,3 +1,5 @@
+import sun.jvm.hotspot.utilities.GenericArray;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -7,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main {
+public class NativeBayes {
     /**
      * 特征矩阵
      */
@@ -49,7 +51,7 @@ public class Main {
     // 预测结果
     private String predictFileName;
 
-    public Main (String trainFileName, String testFileName, String predictFileName) {
+    public NativeBayes (String trainFileName, String testFileName, String predictFileName) {
         this.trainFileName = trainFileName;
         this.testFileName = testFileName;
         this.predictFileName = predictFileName;
@@ -260,7 +262,7 @@ public class Main {
 
         //1.初始化
         long start = System.currentTimeMillis();
-        Main nb = new Main(trainFileName, testFileName, predictFileName);
+        NativeBayes nb = new NativeBayes(trainFileName, testFileName, predictFileName);
         long end = System.currentTimeMillis();
         System.out.println("Init Time(s): " + (end - start) * 1.0 / 1000);
 

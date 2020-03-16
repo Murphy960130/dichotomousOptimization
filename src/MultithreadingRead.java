@@ -9,13 +9,12 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 
 public class MultithreadingRead {
     /**
      * 特征矩阵
      */
-    private double[][] feature;
+    private float[][] feature;
     /**
      * 样本标签
      */
@@ -24,12 +23,12 @@ public class MultithreadingRead {
     /**
      * 测试数据样本
      */
-    private double[][] testFeature;
+    private float[][] testFeature;
 
     /**
      * 梯度下降法步长
      */
-    private double stepLength;
+    private float stepLength;
     /**
      * 最大迭代次数
      */
@@ -37,18 +36,18 @@ public class MultithreadingRead {
     /**
      * 权重矩阵初始化值
      */
-    private double initWeight;
+    private float initWeight;
     /**
      * 训练后的权重矩阵
      */
-    private double[] weights;
+    private float[] weights;
 
     /**
      * 每次迭代使用的样本数
      */
     private int batch_size;
 
-    public double[] getWeights() {
+    public float[] getWeights() {
         return weights;
     }
     // 训练数据
@@ -63,9 +62,9 @@ public class MultithreadingRead {
         this.testFileName = testFileName;
         this.predictFileName = predictFileName;
 
-        this.stepLength = 0.034; //学习率
+        this.stepLength = 0.034f; //学习率
         this.maxStep = 800;
-        this.initWeight = 1.0;
+        this.initWeight = 1.0f;
         this.batch_size = 200;
     }
 
@@ -91,17 +90,17 @@ public class MultithreadingRead {
         } catch (FileNotFoundException exception) {
             System.err.println(fileName + " File Not Found");
         }
-        List<List<Double>> listArr = new ArrayList<>();
+        List<List<Float>> listArr = new ArrayList<>();
         String line = "";
         try {
             if (skipTitle) {
                 reader.readLine();
             }
             while ((line = reader.readLine()) != null) {
-                List<Double> list = new ArrayList<>();
+                List<Float> list = new ArrayList<>();
                 String item[] = line.split(",");
                 for (int i = 0; i < item.length; i++) {
-                    list.add(Double.parseDouble(item[i]));
+                    list.add(Float.parseFloat(item[i]));
                 }
                 listArr.add(list);
             }
@@ -109,7 +108,7 @@ public class MultithreadingRead {
             System.err.println(exception.getMessage());
         }
 
-        feature = new double[listArr.size()][listArr.get(0).size()];
+        feature = new float[listArr.size()][listArr.get(0).size()];
         label = new int[listArr.size()];
         for (int i = 0; i < listArr.size(); i++) {
             int len = listArr.get(i).size();
@@ -117,13 +116,13 @@ public class MultithreadingRead {
                 feature[i][j] = listArr.get(i).get(j);
             }
             label[i] = (int) feature[i][len - 1];
-            feature[i][len - 1] = 0.0;
+            feature[i][len - 1] = 0.0f;
         }
     }
 
     private void initWeightMatrix() {
         int paraSize = feature[0].length;
-        double[] weights = new double[paraSize];
+        float[] weights = new float[paraSize];
         for (int i = 0; i < paraSize; i++) {
             weights[i] = initWeight;
         }
@@ -135,10 +134,10 @@ public class MultithreadingRead {
      *
      * @return 预测标签值
      */
-    private double[] getPredictLabel() {
-        double[] predictLabels = new double[feature.length];
+    private float[] getPredictLabel() {
+        float[] predictLabels = new float[feature.length];
         for (int i = 0; i < predictLabels.length; i++) {
-            double predictSum = 0;
+            float predictSum = 0;
             for (int j = 0; j < feature[i].length; j++) {
                 predictSum += feature[i][j] * weights[j];
             }
@@ -198,8 +197,8 @@ public class MultithreadingRead {
         for (int step = 0; step < maxStep; step++) {
 
             int batch_num = step % num * batch_size;
-            double[] predictLabels = getPredictLabel();
-            double[] deltaWeights = new double[feature[0].length];
+            float[] predictLabels = getPredictLabel();
+            float[] deltaWeights = new float[feature[0].length];
 
             for(int j = 0; j < feature[0].length; j++) {
                 deltaWeights[j] = 0;
@@ -263,17 +262,17 @@ public class MultithreadingRead {
         } catch (FileNotFoundException exception) {
             System.err.println(fileName + " File Not Found");
         }
-        List<List<Double>> listArr = new ArrayList<>();
+        List<List<Float>> listArr = new ArrayList<>();
         String line = "";
         try {
             if (skipTitle) {
                 reader.readLine();
             }
             while ((line = reader.readLine()) != null) {
-                List<Double> list = new ArrayList<>();
+                List<Float> list = new ArrayList<>();
                 String item[] = line.split(",");
                 for (int i = 0; i < item.length; i++) {
-                    list.add(Double.parseDouble(item[i]));
+                    list.add(Float.parseFloat(item[i]));
                 }
                 listArr.add(list);
             }
@@ -281,7 +280,7 @@ public class MultithreadingRead {
             System.err.println(exception.getMessage());
         }
 
-        testFeature = new double[listArr.size()][listArr.get(0).size()];
+        testFeature = new float[listArr.size()][listArr.get(0).size()];
         for (int i = 0; i < listArr.size(); i++) {
             for (int j = 0; j < listArr.get(i).size(); j++) {
                 testFeature[i][j] = listArr.get(i).get(j);
@@ -292,7 +291,7 @@ public class MultithreadingRead {
     public void predict() {
         int[] predictLabel = new int[testFeature.length];
         for (int i = 0; i < testFeature.length; i++) {
-            double sum = 0;
+            float sum = 0;
             for (int j = 0; j < testFeature[i].length; j++) {
                 sum += testFeature[i][j] * weights[j];
             }
@@ -315,8 +314,8 @@ public class MultithreadingRead {
     }
 
 
-    private double sigmoid(double x) {
-        return 1.0d / (1.0d + Math.exp(-x));
+    private float sigmoid(float x) {
+        return 1.0f / (1.0f + (float) Math.exp(-x));
     }
 
 
@@ -355,29 +354,29 @@ public class MultithreadingRead {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                    lr.loadTrainingData(trainFileName, false);
-                    latch.countDown();
+                lr.loadTrainingData(trainFileName, false);
+                latch.countDown();
             }
         }).start();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                    lr.loadPredictingData(testFileName, false);
-                    latch.countDown();
+                lr.loadPredictingData(testFileName, false);
+                latch.countDown();
             }
         }).start();
-
-        System.out.println("Reading file Time(s): " + (System.currentTimeMillis() - end) * 1.0 / 1000);
-        end = System.currentTimeMillis();
 
         //3.训练
         try {
             latch.await();
+            System.out.println("Reading file Time(s): " + (System.currentTimeMillis() - end) * 1.0 / 1000);
+            end = System.currentTimeMillis();
             lr.training();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         System.out.println("Training Time(s): " + (System.currentTimeMillis() - end) * 1.0 / 1000);
         end = System.currentTimeMillis();
 
